@@ -1,0 +1,14 @@
+const fs = require('fs');
+const path = require('path');
+const dir = __dirname;
+const data = JSON.parse(fs.readFileSync(path.join(dir, 'data.json'), 'utf8'));
+const minified = JSON.stringify(data);
+const htmlPath = path.join(dir, 'index.html');
+let html = fs.readFileSync(htmlPath, 'utf8');
+const start = html.indexOf('<script id="initialData"');
+const end = html.indexOf('</script>', start) + 9;
+const before = html.slice(0, start);
+const after = html.slice(end);
+const newBlock = '<script id="initialData" type="application/json">\n' + minified + '\n  </script>';
+fs.writeFileSync(htmlPath, before + newBlock + after, 'utf8');
+console.log('Done. initialData now has', data.length, 'records.');
